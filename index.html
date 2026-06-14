@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Twierdza — Panel Gry</title>
+  <style>
+    :root {
+      --bg: #1d130b;
+      --panel: #2c1b10;
+      --panel-light: #3a2618;
+      --gold: #d6a84f;
+      --gold-light: #f2d27b;
+      --text: #f5ead2;
+      --muted: #c9b58a;
+      --danger: #b44b38;
+      --success: #5f9b63;
+      --border: #8a6a35;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, 'Times New Roman', serif;
+      background:
+        radial-gradient(circle at top, rgba(214, 168, 79, 0.12), transparent 35%),
+        linear-gradient(180deg, #2a1a0f, var(--bg));
+      color: var(--text);
+    }
+
+    .page {
+      width: min(1100px, 94%);
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    header {
+      text-align: center;
+      border: 3px double var(--border);
+      border-radius: 18px;
+      background: rgba(44, 27, 16, 0.92);
+      padding: 24px 18px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before,
+    header::after {
+      content: "✦";
+      position: absolute;
+      top: 20px;
+      font-size: 34px;
+      color: rgba(214, 168, 79, 0.5);
+    }
+
+    header::before { left: 24px; }
+    header::after { right: 24px; }
+
+    .logo-place {
+      width: min(420px, 88%);
+      min-height: 110px;
+      margin: 0 auto 14px;
+      border: 2px dashed rgba(214, 168, 79, 0.65);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      background: rgba(0, 0, 0, 0.15);
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--gold-light);
+      font-size: clamp(34px, 6vw, 62px);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      text-shadow: 0 3px 0 #000;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .treasury {
+      margin: 22px 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .treasury-card {
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      background: linear-gradient(180deg, var(--panel-light), var(--panel));
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .gold-counter {
+      font-size: clamp(28px, 5vw, 46px);
+      color: var(--gold-light);
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
+    label {
+      display: block;
+      color: var(--gold-light);
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      border: 2px solid var(--border);
+      background: #f8eed5;
+      color: #201207;
+      border-radius: 10px;
+      padding: 12px 13px;
+      font-size: 17px;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    button {
+      cursor: pointer;
+      border: 2px solid #5f421d;
+      background: linear-gradient(180deg, #e3bd67, #a87929);
+      color: #1b1006;
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-weight: bold;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 16px;
+      transition: transform 0.08s ease, filter 0.15s ease;
+    }
+
+    button:hover {
+      filter: brightness(1.08);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .spend-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .tasks {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .task {
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      background: rgba(44, 27, 16, 0.92);
+      padding: 16px;
+      position: relative;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .task.solved {
+      border-color: var(--success);
+      background: linear-gradient(180deg, rgba(51, 80, 48, 0.88), rgba(35, 54, 33, 0.92));
+    }
+
+    .task-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+
+    .task-title {
+      font-size: 22px;
+      color: var(--gold-light);
+      font-weight: bold;
+    }
+
+    .reward {
+      color: var(--gold-light);
+      white-space: nowrap;
+      font-weight: bold;
+    }
+
+    .type {
+      color: var(--muted);
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+
+    .answer-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+
+    .message {
+      min-height: 24px;
+      margin-top: 10px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .message.ok {
+      color: #b8f0b6;
+    }
+
+    .message.bad {
+      color: #ffb3a7;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .secondary {
+      background: linear-gradient(180deg, #6b4c28, #3d2918);
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 760px) {
+      .treasury,
+      .tasks {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-row,
+      .spend-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>Twierdza</h1>
+      <p class="subtitle">Rozwiązuj zadania, zdobywaj złoto i zarządzaj skarbcem swojej drużyny.</p>
+    </header>
+
+    <section class="treasury" aria-label="Skarbiec drużyny">
+      <div class="treasury-card">
+        <label>Stan skarbca</label>
+        <div class="gold-counter"><span id="goldAmount">0</span> złota</div>
+        <div class="hint">Złoto nalicza się automatycznie po wpisaniu poprawnego kodu zadania.</div>
+      </div>
+
+      <div class="treasury-card">
+        <label for="spendGold">Wydaj złoto</label>
+        <div class="spend-row">
+          <input id="spendGold" type="number" min="1" placeholder="Np. 50" />
+          <button onclick="spendGold()">Wydaj</button>
+        </div>
+        <div id="spendMessage" class="message"></div>
+      </div>
+    </section>
+
+    <section id="tasks" class="tasks" aria-label="Lista zadań"></section>
+
+    <div class="controls">
+      <button class="secondary" onclick="saveGame()">Zapisz stan gry</button>
+      <button class="secondary" onclick="resetGame()">Zresetuj grę</button>
+    </div>
+  </main>
+
+  <script>
+    /*
+      EDYCJA ZADAŃ:
+      - number: numer zadania
+      - type: "liczba" albo "tekst"
+      - answers: lista poprawnych kodów; możesz wpisać jeden albo kilka wariantów
+      - reward: ile złota daje zadanie
+      - feedback: informacja zwrotna po poprawnym rozwiązaniu
+    */
+
+    const TASKS = [
+      { number: 1, type: "tekst", answers: ["czarna polewka"], reward: 100, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 100 złota." },
+      { number: 2, type: "tekst", answers: ["władza"], reward: 120, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 120 złota." },
+      { number: 3, type: "tekst", answers: ["rycerze"], reward: 150, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 150 złota." },
+      { number: 4, type: "liczba", answers: ["7"], reward: 100, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 100 złota." },
+      { number: 5, type: "liczba", answers: ["1817"], reward: 150, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 150 złota." },
+      { number: 6, type: "tekst", answers: ["kolczuga"], reward: 80, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 80 złota.." },
+      { number: 7, type: "liczba", answers: ["9"], reward: 80, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 80 złota." },
+      { number: 8, type: "tekst", answers: ["mrok"], reward: 80, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 80 złota." },
+      { number: 9, type: "liczba", answers: ["10"], reward: 80, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 80 złota." },
+      { number: 10, type: "liczba", answers: ["6437"], reward: 100, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 100 złota." },
+      { number: 11, type: "tekst", answers: ["zamek"], reward: 80, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 80 złota." },
+      { number: 12, type: "tekst", answers: ["stańczyk","Stańczyk"], reward: 100, feedback: "Drewno sprzedane na targu daje 70 złota." },
+      { number: 13, type: "liczba", answers: ["3"], reward: 100, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 100 złota." },
+      { number: 14, type: "tekst", answers: ["stanisław","Stanisław"], reward: 120, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 120 złota." },
+      { number: 15, type: "tekst", answers: ["miecz"], reward: 100, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 100 złota." },
+      { number: 16, type: "tekst", answers: ["winorośl", "winogrono"], reward: 80, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 80 złota." },
+      { number: 17, type: "liczba", answers: ["12153"], reward: 100, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 100 złota." },
+      { number: 18, type: "tekst", answers: ["zbroja"], reward: 120, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 120 złota." },
+      { number: 19, type: "liczba", answers: ["67","76"], reward: 120, feedback: "Strażnicy uznali Waszą odpowiedź. Otrzymujecie 120 złota." },
+    ];
+
+    let gameState = {
+      gold: 0,
+      solvedTasks: {},
+      spentHistory: []
+    };
+
+    function normalizeAnswer(value) {
+      return value
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+    }
+
+    function loadGame() {
+      const saved = localStorage.getItem("twierdzaGameState");
+      if (saved) {
+        gameState = JSON.parse(saved);
+      }
+      renderTasks();
+      updateGold();
+    }
+
+    function saveGame() {
+      localStorage.setItem("twierdzaGameState", JSON.stringify(gameState));
+      showSpendMessage("Stan gry został zapisany w tej przeglądarce.", "ok");
+    }
+
+    function resetGame() {
+      const confirmReset = confirm("Czy na pewno chcesz zresetować całą grę?");
+      if (!confirmReset) return;
+
+      gameState = {
+        gold: 0,
+        solvedTasks: {},
+        spentHistory: []
+      };
+
+      localStorage.removeItem("twierdzaGameState");
+      renderTasks();
+      updateGold();
+      showSpendMessage("Gra została zresetowana.", "bad");
+    }
+
+    function updateGold() {
+      document.getElementById("goldAmount").textContent = gameState.gold;
+    }
+
+    function renderTasks() {
+      const container = document.getElementById("tasks");
+      container.innerHTML = "";
+
+      TASKS.forEach(task => {
+        const isSolved = Boolean(gameState.solvedTasks[task.number]);
+        const card = document.createElement("article");
+        card.className = `task ${isSolved ? "solved" : ""}`;
+        card.id = `task-${task.number}`;
+
+        card.innerHTML = `
+          <div class="task-head">
+            <div class="task-title">Zadanie ${task.number}</div>
+            <div class="reward">+${task.reward} złota</div>
+          </div>
+          <div class="type">Kod do wpisania: <strong>${task.type}</strong></div>
+          <div class="answer-row">
+            <input
+              id="answer-${task.number}"
+              type="text"
+              placeholder="Wpisz kod zadania"
+              ${isSolved ? "disabled" : ""}
+            />
+            <button onclick="checkAnswer(${task.number})" ${isSolved ? "disabled" : ""}>
+              Sprawdź
+            </button>
+          </div>
+          <div id="message-${task.number}" class="message ${isSolved ? "ok" : ""}">
+            ${isSolved ? task.feedback : ""}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function checkAnswer(taskNumber) {
+      const task = TASKS.find(item => item.number === taskNumber);
+      const input = document.getElementById(`answer-${taskNumber}`);
+      const message = document.getElementById(`message-${taskNumber}`);
+      const userAnswer = normalizeAnswer(input.value);
+      const correctAnswers = task.answers.map(answer => normalizeAnswer(answer));
+
+      if (!userAnswer) {
+        message.textContent = "Najpierw wpisz kod.";
+        message.className = "message bad";
+        return;
+      }
+
+      if (gameState.solvedTasks[taskNumber]) {
+        message.textContent = "To zadanie zostało już rozliczone.";
+        message.className = "message ok";
+        return;
+      }
+
+      if (correctAnswers.includes(userAnswer)) {
+        gameState.solvedTasks[taskNumber] = true;
+        gameState.gold += task.reward;
+        saveGameSilently();
+        updateGold();
+        renderTasks();
+      } else {
+        message.textContent = "Kod nie pasuje. Sprawdźcie jeszcze raz.";
+        message.className = "message bad";
+      }
+    }
+
+    function spendGold() {
+      const input = document.getElementById("spendGold");
+      const amount = Number(input.value);
+
+      if (!amount || amount <= 0) {
+        showSpendMessage("Wpisz poprawną liczbę złota do wydania.", "bad");
+        return;
+      }
+
+      if (amount > gameState.gold) {
+        showSpendMessage("Nie macie tyle złota w skarbcu.", "bad");
+        return;
+      }
+
+      gameState.gold -= amount;
+      gameState.spentHistory.push({ amount, time: new Date().toISOString() });
+      input.value = "";
+      saveGameSilently();
+      updateGold();
+      showSpendMessage(`Wydano ${amount} złota. Skarbiec został pomniejszony.`, "ok");
+    }
+
+    function showSpendMessage(text, status) {
+      const message = document.getElementById("spendMessage");
+      message.textContent = text;
+      message.className = `message ${status}`;
+    }
+
+    function saveGameSilently() {
+      localStorage.setItem("twierdzaGameState", JSON.stringify(gameState));
+    }
+
+    loadGame();
+  </script>
+</body>
+</html>
